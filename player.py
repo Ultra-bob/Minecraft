@@ -22,6 +22,18 @@ class Player:
 
         print(f"{self.active.name} is now your active card")
 
+    def choose_move(self):
+        pri = self.active.primary_stats
+        sec = self.active.secondary_stats
+        print("Moves: ")
+        print(f"0: Deals { pri['damage'] } Damage and heals {pri['heal']} HP")
+        print(f"1: Deals { sec['damage'] } Damage and heals {sec['heal']} HP")
+        move = int(input("Choose a move: "))
+        if move == 0:
+            self.active.primary(self.opponent.active)
+        else:
+            self.active.secondary()
+
 class AI(Player):
 
     algorithm = None

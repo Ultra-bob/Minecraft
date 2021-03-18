@@ -7,7 +7,7 @@ def rate_move(move1, move2, card, other):
 
   if card_turns > other_turns:
     return True
-  elif card.health + more_health['heal'] > other.health:
+  elif card.health + more_health['heal'] > other.health and card.health != card.max_health:
     return False
   else:
     return True
