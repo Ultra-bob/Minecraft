@@ -1,5 +1,6 @@
 from utils import import_card_data
 
+
 class Card:
 
     health = 0
@@ -7,6 +8,7 @@ class Card:
     effects = []
     name = "base"
     owner = None
+    dead = False
 
     boosts = {
         "healing": 1,
@@ -29,6 +31,10 @@ class Card:
         "effects_other": [],
         "effects_self": [],
     }
+
+    def on_turn(self):
+      for effect in self.effects:
+        effect.on_turn()
 
     def __init__(self, data):
         name, max_health, primary, secondary = import_card_data(data)
@@ -53,7 +59,7 @@ class Card:
             other.add_effect(self.primary_stats["effects_self"])
 
     def secondary(self, other=None):
-        if self.secondary_stats["damage"] > 0:
+        if self.secondary_stats["damage"] > 0 and other is not None:
             print(f"{self.owner.name}'s {self.name} attacked {other.name} for ", end="")
         elif self.secondary_stats["heal"] > 0:
             print(f"{self.owner.name}'s {self.name} healed itself for ", end="")
@@ -63,15 +69,21 @@ class Card:
             other.take_damage(self.secondary_stats["damage"], "attack")
             other.add_effect(self.secondary_stats["effects_self"])
         try:
-            kill_self = self.secondary_stats["kill_self"]
+            self.secondary_stats["kill_self"]
         except KeyError:
-            kill_self = False
-        if kill_self:
+            pass
+        else:
             self.die()
 
-    def die(self):
+    def check_death(self):
+      if self.health <= 0 or self.dead:
         print(f"{self.owner.name}'s {self.name} died!")
-        del self
+        self.owner.card_dies(self)
+
+    def die(self):
+      self.dead = True
+  
+        
 
     def heal(self, amount):
         amount *= self.boosts["healing"]
