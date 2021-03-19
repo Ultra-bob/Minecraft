@@ -32,10 +32,6 @@ class Card:
         "effects_self": [],
     }
 
-    def on_turn(self):
-      for effect in self.effects:
-        effect.on_turn()
-
     def __init__(self, data):
         name, max_health, primary, secondary = import_card_data(data)
         self.name = name
@@ -43,37 +39,6 @@ class Card:
         self.health = max_health
         self.primary_stats = primary
         self.secondary_stats = secondary
-
-    def primary(self, other=None):
-        if self.primary_stats["damage"] > 0:
-            print(
-                f"{self.owner.name}'s {self.name} attacked {other.owner.name}'s {other.name} for ",
-                end="",
-            )
-        elif self.primary_stats["heal"] > 0:
-            print(f"{self.owner.name}'s {self.name} healed itself for ", end="")
-        self.heal(self.primary_stats["heal"])
-        self.add_effect(self.primary_stats["effects_self"])
-        if other is not None:
-            other.take_damage(self.primary_stats["damage"], "attack")
-            other.add_effect(self.primary_stats["effects_self"])
-
-    def secondary(self, other=None):
-        if self.secondary_stats["damage"] > 0 and other is not None:
-            print(f"{self.owner.name}'s {self.name} attacked {other.name} for ", end="")
-        elif self.secondary_stats["heal"] > 0:
-            print(f"{self.owner.name}'s {self.name} healed itself for ", end="")
-        self.heal(self.secondary_stats["heal"])
-        self.add_effect(self.secondary_stats["effects_self"])
-        if other is not None:
-            other.take_damage(self.secondary_stats["damage"], "attack")
-            other.add_effect(self.secondary_stats["effects_self"])
-        try:
-            self.secondary_stats["kill_self"]
-        except KeyError:
-            pass
-        else:
-            self.die()
 
     def check_death(self):
       if self.health <= 0 or self.dead:
